@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
+import { BASE_URL } from "../constants";
+import { useNavigate } from "react-router-dom";
 
 export default function CheckoutForm() {
   const stripe = useStripe();
   const elements = useElements();
+  const navigate = useNavigate()
 
   const [message, setMessage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -23,8 +26,9 @@ export default function CheckoutForm() {
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: `${window.location.origin}/completion`,
+        return_url: `/completion`,
       },
+      redirect: 'if_required'
     });
 
     if (error.type === "card_error" || error.type === "validation_error") {
@@ -32,7 +36,7 @@ export default function CheckoutForm() {
     } else {
       setMessage("An unexpected error occurred.");
     }
-
+    navigate("/completion")
     setIsProcessing(false);
   };
 
