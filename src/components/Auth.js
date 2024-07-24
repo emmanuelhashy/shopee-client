@@ -6,15 +6,19 @@ const Auth = () => {
   const { login } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true)
     try {
       await login(email, password);
       navigate("/");
+      setIsLoading(false)
     } catch (error) {
       console.error("Failed to login", error);
+      setIsLoading(false)
     }
   };
 
@@ -56,9 +60,10 @@ const Auth = () => {
           <div>
             <button
               type="submit"
+              disabled={isLoading}
               className="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:ring"
             >
-              Login
+              {isLoading ? "Processing..." : "Login"}
             </button>
           </div>
         </form>

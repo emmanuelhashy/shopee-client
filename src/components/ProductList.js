@@ -2,9 +2,11 @@ import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { CartContext } from '../context/CartContext';
 import { BASE_URL } from '../constants';
+import Spinner from './Spinner';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
@@ -12,11 +14,14 @@ const ProductList = () => {
   }, []);
 
   const fetchProducts = async () => {
+    setIsLoading(true)
     try {
       const response = await axios.get(`${BASE_URL}/products`);
       setProducts(response.data);
+      setIsLoading(false)
     } catch (error) {
       console.error('Failed to fetch products', error);
+      setIsLoading(false)
     }
   };
 
@@ -24,7 +29,11 @@ const ProductList = () => {
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4">Products</h2>
       <ul className="space-y-4">
-        {products.map((product) => (
+        {isLoading ?
+            <div className='flex justify-center items-center w-full'>
+                <Spinner className={"text-2xl w-10 h-10"}/>
+            </div> :
+            products.length > 0 ? products.map((product) => (
           <li key={product.id} className="p-4 bg-white rounded shadow-md">
             <div className="flex items-center justify-between">
               <div>
@@ -41,7 +50,7 @@ const ProductList = () => {
               </div>
             </div>
           </li>
-        ))}
+        )) : <p className='text-center'>No Product Available</p>}
       </ul>
     </div>
   );
